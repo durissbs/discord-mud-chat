@@ -296,7 +296,7 @@ void discord_bridge_poll()
 	}
 }
 
-bool discord_bridge_publish(const char *name, const char *message)
+bool discord_bridge_publish(const char *name, const char *message, const char *channel)
 {
 	if (!status.listening)
 		return false; // Disabled operation is not a delivery failure.
@@ -309,7 +309,7 @@ bool discord_bridge_publish(const char *name, const char *message)
 		return false;
 	}
 	cJSON *record = cJSON_CreateObject();
-	const bool fields = cJSON_AddStringToObject(record, "channel", "petition") &&
+	const bool fields = cJSON_AddStringToObject(record, "channel", channel) &&
 			    cJSON_AddStringToObject(record, "name", name) &&
 			    cJSON_AddStringToObject(record, "message", message) &&
 			    cJSON_AddNumberToObject(record, "emoted", 0);

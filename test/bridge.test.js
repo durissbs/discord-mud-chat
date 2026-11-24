@@ -1,3 +1,4 @@
+const { MessageFlags } = require("discord.js");
 const assert = require("node:assert/strict");
 const { EventEmitter } = require("node:events");
 const { test } = require("node:test");
@@ -255,7 +256,7 @@ test("shared protocol fixtures survive byte-wise UTF-8 fragmentation and coalesc
         }
         await new Promise(resolve => setImmediate(resolve));
         assert.deepEqual(discordClient.sentMessages.map(({ message }) => message),
-            protocolFixtures.chat.map(({ content }) => ({ content, allowedMentions: { parse: [] } })));
+            protocolFixtures.chat.map(({ content }) => ({ content, allowedMentions: { parse: [] }, flags: MessageFlags.SuppressEmbeds })));
         assert.equal(healthServer.mudToDiscord, protocolFixtures.chat.length);
     }
 });
@@ -375,7 +376,7 @@ test("one-way mappings export MUD chat and allow controls without Discord ingres
     assert.equal(bridge.handleMudData(mudRecord({ channel: "petition", name: "Player", message: "Help" })), true);
     await new Promise(resolve => setImmediate(resolve));
     assert.deepEqual(discordClient.sentMessages, [{ id: "discord-1", message: {
-        content: "Player: Help", allowedMentions: { parse: [] }
+        content: "Player: Help", allowedMentions: { parse: [] }, flags: MessageFlags.SuppressEmbeds
     } }]);
     assert.equal(healthServer.mudToDiscord, 1);
 });
@@ -508,14 +509,16 @@ test("MUD messages relay to mapped Discord channels with emote formatting", asyn
             id: "discord-1",
             message: {
                 content: "Ayla: Hello",
-                allowedMentions: { parse: [] }
+                allowedMentions: { parse: [] },
+                flags: MessageFlags.SuppressEmbeds
             }
         },
         {
             id: "discord-1",
             message: {
                 content: "waves",
-                allowedMentions: { parse: [] }
+                allowedMentions: { parse: [] },
+                flags: MessageFlags.SuppressEmbeds
             }
         }
     ]);

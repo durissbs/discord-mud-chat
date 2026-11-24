@@ -130,7 +130,8 @@ async function main() {
         assert.equal(reply.audit_entries, 1);
         await rpc("hidden_reply", "Hidden staff reply");
         await until(() => posts.length === 3);
-        assert.deepEqual(posts.map(p => p.content), ['Player: Help $n @everyone 你好 🔥 "quote" \\',
+        // The bridge escapes Markdown, so a literal backslash arrives doubled.
+        assert.deepEqual(posts.map(p => p.content), ['Player: Help $n @everyone 你好 🔥 "quote" \\\\',
             "Staff -> Player: Checking $1 🔥", "Staff -> Player: Hidden staff reply"]);
 
         await rpc("hidden_petition", "Hidden player petition");

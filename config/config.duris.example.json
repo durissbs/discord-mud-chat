@@ -17,6 +17,11 @@
       "discord": "STAFF_PETITION_CHANNEL_ID",
       "mud": "petition",
       "direction": "mud_to_discord"
+    },
+    {
+      "discord": "IDEAS_CHANNEL_ID",
+      "mud": "idea",
+      "direction": "mud_to_discord"
     }
   ]
 }

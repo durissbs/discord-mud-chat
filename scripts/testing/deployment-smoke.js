@@ -1,4 +1,5 @@
 // Exercise the real application lifecycle without logging in to Discord.
+const { MessageFlags } = require("discord.js");
 const assert = require("node:assert/strict");
 const { EventEmitter } = require("node:events");
 const fs = require("node:fs");
@@ -70,7 +71,7 @@ async function main() {
             assert.ok(Date.now() < deadline, "fixture did not reach the Discord sink");
             await new Promise(resolve => setTimeout(resolve, 10));
         }
-        assert.deepEqual(posts, [{ content: "Fixture: " + record.message, allowedMentions: { parse: [] } }]);
+        assert.deepEqual(posts, [{ content: "Fixture: " + record.message, allowedMentions: { parse: [] }, flags: MessageFlags.SuppressEmbeds }]);
         const accepted = app.bridge.handleDiscordMessage({ content: "fixture ingress", channel: { id: mapping.discord },
             author: { id: "fixture-user" }, member: { user: { bot: false, username: "User" } } });
         assert.equal(accepted, generic);

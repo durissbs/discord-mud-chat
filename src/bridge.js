@@ -3,6 +3,7 @@ const { StringDecoder } = require("node:string_decoder");
 const { isLoopbackHost, validateMudTransportConfig } = require("./mud-client");
 const { validateChannelDirections } = require("../config/load-config");
 const { DiscordDelivery } = require("./discord-delivery");
+const { escapeMarkdown } = require("discord.js");
 
 const HEARTBEAT_INTERVAL_MS = 240000;
 const RATE_LIMIT_RETENTION_MS = 10000;
@@ -14,6 +15,12 @@ function stripEmoji(value, emojiRegexFactory = emojiRegexText) {
     const unicodeEmoji = emojiRegexFactory();
 
     return value.replace(customEmoji, "").replace(unicodeEmoji, "");
+}
+
+/** Shows game text literally: no masked links, headings, lists or other Markdown. */
+function escapeDiscordText(value) {
+    return escapeMarkdown(value, { heading: true, bulletedList: true, numberedList: true, maskedLink: true })
+        .replace(/^-#/gm, "\\-#");
 }
 
 /** Relays messages and connection state between Discord and a MUD server. */
@@ -244,9 +251,9 @@ class ChatBridge {
             const discordChannel = this.discordClient.channels.cache.get(channel.discord);
             if (!discordChannel) continue;
 
-            const message = messageData.emoted === 1
-                ? `${messageData.message}`
-                : `${messageData.name}: ${messageData.message}`;
+            const message = escapeDiscordText(messageData.emoted === 1
+                ? messageData.message
+                : `${messageData.name}: ${messageData.message}`);
             if (this.discordDelivery.enqueue(channel.discord, discordChannel, message)) relayed = true;
         }
 
@@ -469,5 +476,6 @@ module.exports = {
     DEFAULT_MAX_MUD_RECORD_BYTES,
     HEARTBEAT_INTERVAL_MS,
     RATE_LIMIT_RETENTION_MS,
+    escapeDiscordText,
     stripEmoji
 };

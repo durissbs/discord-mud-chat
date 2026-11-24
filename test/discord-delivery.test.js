@@ -1,6 +1,10 @@
+const { MessageFlags } = require("discord.js");
 const assert = require("node:assert/strict");
 const { test } = require("node:test");
-const { DiscordDelivery, MAX_PENDING_DISCORD_EVENTS, MAX_PENDING_DISCORD_BYTES } = require("../src/discord-delivery");
+const {
+    DiscordDelivery, MAX_PENDING_DISCORD_EVENTS, MAX_PENDING_DISCORD_BYTES,
+    MAX_PENDING_EVENTS_PER_DESTINATION, MAX_PENDING_BYTES_PER_DESTINATION
+} = require("../src/discord-delivery");
 
 function harness() {
     const stats = { sent: 0, dropped: 0, errors: [] };
@@ -67,23 +71,47 @@ test("per-channel ordering prevents later events interleaving and slow channels 
 
 test("queue event limit includes the in-flight event and rejects a whole new delivery", async () => {
     const { delivery, stats } = harness();
-    const channel = controlledChannel();
-    for (let i = 0; i < MAX_PENDING_DISCORD_EVENTS; i++) assert.ok(delivery.enqueue("one", channel, "x"));
+    const channel = controlledChannel(), other = controlledChannel(), third = controlledChannel();
+    for (let i = 0; i < MAX_PENDING_EVENTS_PER_DESTINATION; i++) assert.ok(delivery.enqueue("one", channel, "x"));
     assert.equal(delivery.enqueue("one", channel, "not admitted"), false);
-    assert.equal(channel.calls.length, 1);
+    for (let i = 0; i < MAX_PENDING_EVENTS_PER_DESTINATION; i++) assert.ok(delivery.enqueue("two", other, "x"));
     assert.equal(delivery.pendingEvents, MAX_PENDING_DISCORD_EVENTS);
-    assert.equal(stats.dropped, 1);
+    assert.equal(delivery.enqueue("three", third, "global limit"), false);
+    assert.equal(channel.calls.length, 1);
+    assert.equal(stats.dropped, 2);
     delivery.close();
     delivery.close();
     assert.equal(delivery.pendingBytes, 0);
     assert.equal(delivery.pendingEvents, 0);
-    assert.equal(stats.dropped, MAX_PENDING_DISCORD_EVENTS + 1);
+    assert.equal(stats.dropped, MAX_PENDING_DISCORD_EVENTS + 2);
     channel.calls[0].resolve();
     await settled();
     assert.equal(channel.calls.length, 1);
     assert.equal(stats.sent, 1); // an already-issued request can complete after stop
     assert.equal(delivery.pendingBytes, 0);
     assert.equal(delivery.enqueue("one", channel, "after stop"), false);
+});
+
+test("a flooded destination cannot starve another destination", async () => {
+    const { delivery, stats } = harness();
+    const ideas = controlledChannel(), staff = controlledChannel();
+    for (let i = 0; i < MAX_PENDING_DISCORD_EVENTS * 4; i++) delivery.enqueue("ideas", ideas, "Griefer: spam");
+    assert.equal(delivery.queues.get("ideas").length, MAX_PENDING_EVENTS_PER_DESTINATION);
+    assert.equal(delivery.enqueue("staff", staff, "Player: help"), true);
+    assert.equal(staff.calls[0].payload.content, "Player: help");
+    assert.equal(delivery.enqueue("ideas", ideas, "x".repeat(MAX_PENDING_BYTES_PER_DESTINATION)), false);
+    staff.calls[0].resolve();
+    await settled();
+    assert.equal(stats.sent, 1);
+    delivery.close();
+});
+
+test("posts suppress link embeds", async () => {
+    const { delivery } = harness();
+    const payloads = [];
+    delivery.enqueue("one", { async send(payload) { payloads.push(payload); } }, "A: https://example.invalid");
+    await settled();
+    assert.equal(payloads[0].flags, MessageFlags.SuppressEmbeds);
 });
 
 test("queue byte limit uses UTF-8 bytes globally and retains partial events", async () => {

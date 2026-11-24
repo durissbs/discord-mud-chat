@@ -2,13 +2,16 @@
 
 These four `net/discord_*` files are byte-for-byte copies of the production
 Duris modules at tested revision
-`b9847f7df77ed471a23be5afd889d2ef660eb3df` (merged Duris PR #102).
+`a1186b2810b297b2a9be101ca53e897893457dec` (Duris
+[durissbs/Duris#19](https://github.com/durissbs/Duris/pull/19), which adds the idea feed).
 They use Duris's **C++20** build,
 cJSON/crypto libraries, character types and ANSI/Unicode utilities. Do not mix
 these with the generic C89 sample one directory above.
 
 `integration.patch` contains only the build, lifecycle, accepted-command hooks,
-and petition/ptell help changes. It targets Duris base revision
+and petition/ptell help changes. It does not add the `idea` hook (`do_idea` in
+`src/cmd/actoth.c`, plus Duris's append-only report file writes); take those
+from the native PR. It targets Duris base revision
 `7156b32431394a12a5a726d1158e1968dd89b3c7`. It includes the formatter corrections
 required in the touched `comm.c` file; no complete game files are copied here.
 `manifest.json` records the current tested module revision, the original
@@ -38,7 +41,8 @@ ordinary shutdown path. Close-on-exec recreates the listener after copyover;
 failed exec leaves the original endpoint usable.
 
 The endpoint is disabled by default. When enabled it exports only accepted
-petitions and staff replies, strips native color/terminal controls, and retains
+petitions and staff replies (`petition`) and saved player ideas (`idea`, five per
+player per minute), strips native color/terminal controls, and retains
 actual character names even when participants are concealed. It consumes only
 auth/heartbeat controls and discards all incoming chat. Its loopback listener is separate from gameplay ports. Follow the
 [Duris operator guide](../../duris.md) for configuration and rollback; the staff

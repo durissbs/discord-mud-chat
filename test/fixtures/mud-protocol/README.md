@@ -2,7 +2,8 @@
 
 `records.json` is data, independent of Node and Duris. `chat[].wire` contains
 complete UTF-8 wire records after JSON decoding, including the actual LF (or
-CRLF) delimiter. `content` is the corresponding Discord text. `controls`
+CRLF) delimiter. `content` is the corresponding Discord text, with Markdown escaped so game
+text shows literally. `controls`
 contains decoded objects; serialize each as JSON followed by LF. The auth token
 is synthetic. `invalid` and `blank` exercise recovery and ignored input.
 

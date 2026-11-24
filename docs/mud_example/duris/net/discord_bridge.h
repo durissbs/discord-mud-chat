@@ -27,8 +27,9 @@ void discord_bridge_flush();
 void discord_bridge_shutdown();
 discord_bridge_status discord_bridge_get_status();
 
-// name/message must already be plain UTF-8. Serializes only channel: petition.
+// name/message must already be plain UTF-8. channel is a fixed game feed name.
 // False means the complete event was dropped; never saves for a later client.
-bool discord_bridge_publish(const char *name, const char *message);
+bool discord_bridge_publish(const char *name, const char *message,
+			    const char *channel = "petition");
 
 #endif

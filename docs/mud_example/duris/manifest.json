@@ -1,6 +1,6 @@
 {
   "base_revision": "7156b32431394a12a5a726d1158e1968dd89b3c7",
-  "tested_revision": "b9847f7df77ed471a23be5afd889d2ef660eb3df",
+  "tested_revision": "a1186b2810b297b2a9be101ca53e897893457dec",
   "patch_files": [
     "src/Makefile",
     "src/net/comm.c",
@@ -10,10 +10,10 @@
     "lib/information/help_index"
   ],
   "sha256": {
-    "net/discord_bridge.c": "a7bfba49b55c92f7af60a1870538bcc86395d6b9cf2166dd7ad4b05b78888f8a",
-    "net/discord_bridge.h": "11bf3636da38bb35b3399aa336b050998d2c9834e640bad142c7050101e49b96",
-    "net/discord_petition.c": "2da57c6e5c003cec87c6ff58bbfa9445553a182a6f4046aa90195591178de50d",
-    "net/discord_petition.h": "1a5c89fd428358a3d9eb8aaca2b1d35bd3e4f1ce9a5e9f9e5af4acabcd53da04",
+    "net/discord_bridge.c": "33b370c47e120e18c9b3c05381a90123f6988ee96d80cf397b8462137cd4088c",
+    "net/discord_bridge.h": "2ab3f4977344438229b7642ce58244764ff338e9dc2a8aa6991326d6a299fc09",
+    "net/discord_petition.c": "25ea53abb72b29eddc055fa22cd497be4aab8f9eca3f268dc36961005a4b7bfc",
+    "net/discord_petition.h": "a7b3086e24b33b9800cab59eeb113b0bcab206547df564c91eafbf3f3c4bb4c9",
     "integration.patch": "3fcd576d92a4bc4ae82bd20aa20ebb9b83279974457132093d745f75bfefc82b"
   },
   "integration_revision": "6ab9b34945625d2ca944008c4b6dc67aaaf2a61f",
