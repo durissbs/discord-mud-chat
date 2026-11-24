@@ -7,6 +7,8 @@ const path = require("node:path");
 const root = process.env.BRIDGE_MODULE_ROOT || path.resolve(__dirname, "../..");
 const { createApplication, registerShutdownHandlers } = require(path.join(root, "src/index"));
 const { loadConfig } = require(path.join(root, "config/load-config"));
+// Resolve from the bridge root: in the container this script is mounted outside /app.
+const { MessageFlags } = require(require.resolve("discord.js", { paths: [root] }));
 
 async function main() {
     const generic = process.env.SMOKE_GENERIC === "1";
@@ -70,7 +72,7 @@ async function main() {
             assert.ok(Date.now() < deadline, "fixture did not reach the Discord sink");
             await new Promise(resolve => setTimeout(resolve, 10));
         }
-        assert.deepEqual(posts, [{ content: "Fixture: " + record.message, allowedMentions: { parse: [] } }]);
+        assert.deepEqual(posts, [{ content: "Fixture: " + record.message, allowedMentions: { parse: [] }, flags: MessageFlags.SuppressEmbeds }]);
         const accepted = app.bridge.handleDiscordMessage({ content: "fixture ingress", channel: { id: mapping.discord },
             author: { id: "fixture-user" }, member: { user: { bot: false, username: "User" } } });
         assert.equal(accepted, generic);

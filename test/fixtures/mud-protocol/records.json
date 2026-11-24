@@ -18,7 +18,12 @@
     {
       "id": "escaping-and-crlf",
       "wire": "{\"channel\":\"gossip\",\"name\":\"Ayla\",\"message\":\"Quote \\\"hi\\\", slash \\\\, line\\nnext\\t@everyone $coin\"}\r\n",
-      "content": "Ayla: Quote \"hi\", slash \\, line\nnext\t@everyone $coin"
+      "content": "Ayla: Quote \"hi\", slash \\\\, line\nnext\t@everyone $coin"
+    },
+    {
+      "id": "markdown-is-literal",
+      "wire": "{\"channel\":\"gossip\",\"name\":\"Ayla\",\"message\":\"[portal](https://example.invalid) **b** ||s||\"}\n",
+      "content": "Ayla: \\[portal](https://example.invalid) \\*\\*b\\*\\* \\|\\|s\\|\\|"
     }
   ],
   "controls": [

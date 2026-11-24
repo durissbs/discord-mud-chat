@@ -1,7 +1,9 @@
-# Duris petition feed
+# Duris petition and idea feeds
 
 This integration publishes **accepted petitions and staff `ptell` replies** to
-one staff-only Discord channel. Discord posts never become game chat or game
+one staff-only Discord channel, and **saved player `idea` submissions** to a
+second channel. Each player may send five ideas per minute to Discord; the
+game's idea file keeps every one, and is the complete record. Discord posts never become game chat or game
 commands. Other channels and private tells are outside this integration.
 Native permission checks, recipient toggles, echo, logs, and GMCP still run as
 before, including when the bridge is disabled, offline, or full.
@@ -65,8 +67,10 @@ cp config/config.duris.example.json config/config.json
 cp .env.example .env
 ```
 
-Replace `STAFF_PETITION_CHANNEL_ID` with the staff channel's ID. Keep exactly
-one mapping, with `mud: "petition"` and `direction: "mud_to_discord"`. Set the
+Replace `STAFF_PETITION_CHANNEL_ID` with the staff channel's ID and
+`IDEAS_CHANNEL_ID` with the ideas channel's ID, or delete the `idea` mapping to
+leave ideas out. Keep `direction: "mud_to_discord"` on both mappings. Ideas
+carry real player names, so restrict that channel the same way. Set the
 bot token as `DISCORD_TOKEN` in the protected environment. For this same-host
 plaintext example, leave `MUD_AUTH_TOKEN` unset; tokens require TLS in Node.
 Do not store tokens in `config/config.json`.
