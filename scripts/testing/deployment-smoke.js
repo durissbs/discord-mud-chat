@@ -1,5 +1,4 @@
 // Exercise the real application lifecycle without logging in to Discord.
-const { MessageFlags } = require("discord.js");
 const assert = require("node:assert/strict");
 const { EventEmitter } = require("node:events");
 const fs = require("node:fs");
@@ -8,6 +7,8 @@ const path = require("node:path");
 const root = process.env.BRIDGE_MODULE_ROOT || path.resolve(__dirname, "../..");
 const { createApplication, registerShutdownHandlers } = require(path.join(root, "src/index"));
 const { loadConfig } = require(path.join(root, "config/load-config"));
+// Resolve from the bridge root: in the container this script is mounted outside /app.
+const { MessageFlags } = require(require.resolve("discord.js", { paths: [root] }));
 
 async function main() {
     const generic = process.env.SMOKE_GENERIC === "1";
